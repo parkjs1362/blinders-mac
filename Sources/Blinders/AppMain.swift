@@ -98,12 +98,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             name: NSApplication.didChangeScreenParametersNotification,
             object: nil
         )
-        if !accessibilityTrusted(prompt: false) {
-            _ = accessibilityTrusted(prompt: true)
-        }
         render()
         DispatchQueue.main.async { [weak self] in
-            self?.showMenu()
+            guard let self, !accessibilityTrusted(prompt: false) else { return }
+            self.showNotice()
         }
     }
 
@@ -119,37 +117,61 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func showNotice() {
         let window = notice ?? makeNotice()
         notice = window
-        window.center()
-        window.makeKeyAndOrderFront(nil)
+        let screen = NSScreen.screens.first { $0.frame.contains(NSEvent.mouseLocation) }
+            ?? NSScreen.main
+            ?? NSScreen.screens[0]
+        let size = window.frame.size
+        window.setFrameOrigin(NSPoint(
+            x: screen.frame.midX - size.width / 2,
+            y: screen.frame.midY - size.height / 2
+        ))
+        window.collectionBehavior = [.moveToActiveSpace]
+        window.level = .statusBar
+        window.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
     }
 
     private func makeNotice() -> NSWindow {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 156),
+            contentRect: NSRect(x: 0, y: 0, width: 440, height: 188),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
         window.title = "Blinders"
-        window.level = .floating
         window.isReleasedWhenClosed = false
         let text = NSTextField(wrappingLabelWithString: Copy.s(
-            "실행 중입니다. 메뉴막대의 B 를 누르세요.\n다른 창을 어둡게 하려면 손쉬운 사용에서 Blinders를 켜야 합니다.",
-            "Blinders is running. Click B in the menu bar.\nTurn on Blinders in Accessibility to dim other windows."
+            "실행 중입니다. 다른 창을 어둡게 하려면 설정에서 Blinders 스위치를 켜세요. 켠 뒤에도 이 창이 남아 있으면 다시 실행을 누르세요.",
+            "Blinders is running. Turn on its switch in Settings to dim other windows. If this window stays after that, click Relaunch."
         ))
-        text.frame = NSRect(x: 20, y: 60, width: 360, height: 76)
-        let button = NSButton(
-            title: Copy.s("손쉬운 사용 설정 열기", "Open Accessibility Settings"),
+        text.frame = NSRect(x: 20, y: 64, width: 400, height: 100)
+        let settings = NSButton(
+            title: Copy.s("설정 열기", "Open Settings"),
             target: self,
             action: #selector(openAX)
         )
-        button.frame = NSRect(x: 20, y: 16, width: 240, height: 32)
-        let content = NSView(frame: NSRect(x: 0, y: 0, width: 400, height: 156))
+        settings.frame = NSRect(x: 20, y: 16, width: 140, height: 32)
+        let again = NSButton(
+            title: Copy.s("다시 실행", "Relaunch"),
+            target: self,
+            action: #selector(relaunch)
+        )
+        again.frame = NSRect(x: 172, y: 16, width: 140, height: 32)
+        let content = NSView(frame: NSRect(x: 0, y: 0, width: 440, height: 188))
         content.addSubview(text)
-        content.addSubview(button)
+        content.addSubview(settings)
+        content.addSubview(again)
         window.contentView = content
         return window
+    }
+
+    @objc private func relaunch() {
+        let path = Bundle.main.bundleURL.path
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/sh")
+        task.arguments = ["-c", "sleep 0.7; exec /usr/bin/open \"$1\"", "sh", path]
+        try? task.run()
+        NSApp.terminate(nil)
     }
 
     private func menuAnchor() -> NSPoint {
@@ -223,6 +245,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func render() {
         guard statusItem != nil else { return }
         let trusted = accessibilityTrusted(prompt: false)
+        if trusted {
+            notice?.orderOut(nil)
+        }
         let show = trusted && percent > 0 && !isPaused && !fnDown
         let animated = show != wasShowing
         wasShowing = show
