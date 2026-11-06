@@ -7,6 +7,10 @@ enum Copy {
     static func s(_ korean: String, _ english: String) -> String { ko ? korean : english }
 }
 
+extension Notification.Name {
+    static let blindersShow = Notification.Name("com.joonit.blinders.show")
+}
+
 final class Hotkey {
     var onFire: () -> Void = {}
     private(set) var registrationError: OSStatus = 0
@@ -45,6 +49,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var fnDown = false
     private var wasShowing = false
     private var scrollBucket: CGFloat = 0
+    private var notice: NSWindow?
 
     override init() {
         let defaults = UserDefaults.standard
@@ -59,16 +64,29 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         assert(runDimTargetSelfCheck())
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.isVisible = true
         menu.delegate = self
-        statusItem.menu = menu
-        if let image = NSImage(systemSymbolName: "rectangle.lefthalf.filled", accessibilityDescription: "Blinders") {
-            image.isTemplate = true
-            statusItem.button?.image = image
-        } else {
-            statusItem.button?.title = "B"
+        if let button = statusItem.button {
+            button.title = "B"
+            button.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
+            button.target = self
+            button.action = #selector(showMenu)
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            if let image = NSImage(systemSymbolName: "rectangle.lefthalf.filled", accessibilityDescription: "Blinders") {
+                image.isTemplate = true
+                image.size = NSSize(width: 16, height: 16)
+                button.image = image
+                button.imagePosition = .imageLeading
+            }
         }
+        DistributedNotificationCenter.default().addObserver(
+            self,
+            selector: #selector(showMenu),
+            name: .blindersShow,
+            object: nil,
+            suspensionBehavior: .deliverImmediately
+        )
         installMonitors()
         hotkey.onFire = { [weak self] in self?.primaryAction() }
         hotkey.install()
@@ -84,6 +102,67 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             _ = accessibilityTrusted(prompt: true)
         }
         render()
+        DispatchQueue.main.async { [weak self] in
+            self?.showMenu()
+        }
+    }
+
+    @objc func showMenu() {
+        if !accessibilityTrusted(prompt: false) {
+            showNotice()
+            return
+        }
+        menu.update()
+        menu.popUp(positioning: nil, at: menuAnchor(), in: nil)
+    }
+
+    private func showNotice() {
+        let window = notice ?? makeNotice()
+        notice = window
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func makeNotice() -> NSWindow {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 156),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Blinders"
+        window.level = .floating
+        window.isReleasedWhenClosed = false
+        let text = NSTextField(wrappingLabelWithString: Copy.s(
+            "실행 중입니다. 메뉴막대의 B 를 누르세요.\n다른 창을 어둡게 하려면 손쉬운 사용에서 Blinders를 켜야 합니다.",
+            "Blinders is running. Click B in the menu bar.\nTurn on Blinders in Accessibility to dim other windows."
+        ))
+        text.frame = NSRect(x: 20, y: 60, width: 360, height: 76)
+        let button = NSButton(
+            title: Copy.s("손쉬운 사용 설정 열기", "Open Accessibility Settings"),
+            target: self,
+            action: #selector(openAX)
+        )
+        button.frame = NSRect(x: 20, y: 16, width: 240, height: 32)
+        let content = NSView(frame: NSRect(x: 0, y: 0, width: 400, height: 156))
+        content.addSubview(text)
+        content.addSubview(button)
+        window.contentView = content
+        return window
+    }
+
+    private func menuAnchor() -> NSPoint {
+        let screen = NSScreen.main ?? NSScreen.screens[0]
+        if let button = statusItem.button, let window = button.window {
+            let rect = window.convertToScreen(button.bounds)
+            let inMenuBar = rect.height > 2 && abs(screen.frame.maxY - rect.maxY) < 40
+            if inMenuBar {
+                let x = min(max(rect.minX, screen.frame.minX), screen.frame.maxX - 420)
+                return NSPoint(x: x, y: screen.frame.maxY - 8)
+            }
+        }
+        return NSPoint(x: screen.frame.maxX - 420, y: screen.frame.maxY - 8)
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -344,6 +423,12 @@ enum Main {
         let others = NSRunningApplication.runningApplications(withBundleIdentifier: "com.joonit.blinders")
             .filter { $0.processIdentifier != getpid() }
         if !others.isEmpty {
+            DistributedNotificationCenter.default().postNotificationName(
+                .blindersShow,
+                object: nil,
+                userInfo: nil,
+                deliverImmediately: true
+            )
             exit(0)
         }
         let controller = AppController()
