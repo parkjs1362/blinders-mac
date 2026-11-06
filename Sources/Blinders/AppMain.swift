@@ -72,7 +72,6 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             button.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
             button.target = self
             button.action = #selector(showMenu)
-            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             if let image = NSImage(systemSymbolName: "rectangle.lefthalf.filled", accessibilityDescription: "Blinders") {
                 image.isTemplate = true
                 image.size = NSSize(width: 16, height: 16)
@@ -141,37 +140,25 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         window.title = "Blinders"
         window.isReleasedWhenClosed = false
         let text = NSTextField(wrappingLabelWithString: Copy.s(
-            "실행 중입니다. 다른 창을 어둡게 하려면 설정에서 Blinders 스위치를 켜세요. 켠 뒤에도 이 창이 남아 있으면 다시 실행을 누르세요.",
-            "Blinders is running. Turn on its switch in Settings to dim other windows. If this window stays after that, click Relaunch."
+            "스위치가 켜져 있어도 한 번 끄고 다시 켜 주세요. 방금 만든 앱과 예전 허용이 달라서, 켜 둔 채로 두면 설정 화면이 다시 뜹니다. 끄고 켜면 이 창은 저절로 닫힙니다.",
+            "Turn the Blinders switch off, then on again. An older allow-list entry does not match this build, so leaving it on brings Settings back. This window closes once the new switch is on."
         ))
-        text.frame = NSRect(x: 20, y: 64, width: 400, height: 100)
+        text.frame = NSRect(x: 20, y: 64, width: 400, height: 108)
         let settings = NSButton(
             title: Copy.s("설정 열기", "Open Settings"),
             target: self,
             action: #selector(openAX)
         )
         settings.frame = NSRect(x: 20, y: 16, width: 140, height: 32)
-        let again = NSButton(
-            title: Copy.s("다시 실행", "Relaunch"),
-            target: self,
-            action: #selector(relaunch)
-        )
-        again.frame = NSRect(x: 172, y: 16, width: 140, height: 32)
+        settings.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            settings.isEnabled = true
+        }
         let content = NSView(frame: NSRect(x: 0, y: 0, width: 440, height: 188))
         content.addSubview(text)
         content.addSubview(settings)
-        content.addSubview(again)
         window.contentView = content
         return window
-    }
-
-    @objc private func relaunch() {
-        let path = Bundle.main.bundleURL.path
-        let task = Process()
-        task.executableURL = URL(fileURLWithPath: "/bin/sh")
-        task.arguments = ["-c", "sleep 0.7; exec /usr/bin/open \"$1\"", "sh", path]
-        try? task.run()
-        NSApp.terminate(nil)
     }
 
     private func menuAnchor() -> NSPoint {
