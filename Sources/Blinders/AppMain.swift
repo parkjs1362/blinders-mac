@@ -86,9 +86,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             object: nil,
             suspensionBehavior: .deliverImmediately
         )
-        installMonitors()
         hotkey.onFire = { [weak self] in self?.primaryAction() }
-        hotkey.install()
         focus.onChange = { [weak self] in self?.render() }
         focus.start()
         NotificationCenter.default.addObserver(
@@ -140,8 +138,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         window.title = "Blinders"
         window.isReleasedWhenClosed = false
         let text = NSTextField(wrappingLabelWithString: Copy.s(
-            "스위치가 켜져 있어도 한 번 끄고 다시 켜 주세요. 방금 만든 앱과 예전 허용이 달라서, 켜 둔 채로 두면 설정 화면이 다시 뜹니다. 끄고 켜면 이 창은 저절로 닫힙니다.",
-            "Turn the Blinders switch off, then on again. An older allow-list entry does not match this build, so leaving it on brings Settings back. This window closes once the new switch is on."
+            "손쉬운 사용 목록에서 Blinders를 한 번만 켜 주세요. 켜지면 이 창은 닫히고 다른 창이 어두워집니다.",
+            "Turn Blinders on once in the Accessibility list. This window closes and other windows dim."
         ))
         text.frame = NSRect(x: 20, y: 64, width: 400, height: 108)
         let settings = NSButton(
