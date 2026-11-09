@@ -1,28 +1,58 @@
-# Blinders
+<p align="center">
+  <img src="docs/images/logo.png" width="96" alt="Blinders icon">
+</p>
 
-Dim everything except the window you are using. A small Mac app for the Dock and the menu bar.
+<h1 align="center">Blinders</h1>
 
-macOS 14 or later. The download is not notarized, so the first open needs an extra click. No account, no screen recording permission.
+<p align="center">
+  <b>Dim everything except the window you're working in.</b><br>
+  A small Mac app for focus. The front window stays bright. Everything else fades.
+</p>
 
-**English** · [한국어](#한국어)
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 or later">
+  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="version 0.1.0">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license">
+  <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="about 1 MB">
+</p>
 
-## Install
+<p align="center">
+  <b>English</b> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.es.md">Español</a> ·
+  <a href="README.de.md">Deutsch</a> ·
+  <a href="README.fr.md">Français</a>
+</p>
+
+<p align="center">
+  <img src="docs/images/settings.png" width="360" alt="Blinders settings">
+</p>
+
+## Why
+
+Like blinders on a racehorse: the window you are using stays bright, and the rest of the desk goes quiet. Other windows and the desktop are still there. They are just dim. One app, no account, no telemetry.
+
+## Features
+
+- **Focus dimming.** The front window stays bright. Other windows and the desktop dim, on every display.
+- **Menu bar and Dock stay bright.**
+- **Darkness** slider from 10% to 90%. The default is 50%.
+- **Pause** for 10 minutes or 1 hour.
+- **Launch at login,** after the app is in `/Applications`.
+- **Desktop click** clears the shade. Choose a window again and it returns.
+- **No window in front:** the whole screen dims, so a background app is not treated as the one you are using.
+- **Fullscreen:** a front window that fills a display leaves that display bright. Other displays keep dimming.
+
+## Download
 
 1. Download `Blinders-0.1.0.zip` from [Releases](../../releases).
 2. Unzip it and move `Blinders.app` to `/Applications`.
-3. Right-click `Blinders.app` and choose **Open**, then **Open** again. The Dock icon is a window split into a bright half and a dim half.
+3. Right-click the app and choose **Open**, then **Open** again. It is not notarized yet, so the first launch needs that extra click.
 4. Open **System Settings → Privacy & Security → Accessibility** and turn Blinders on. If the switch is already on and nothing dims, turn it off and on once.
 
-The settings window opens from the Dock icon, or from **B** in the menu bar.
-
-## Settings
-
-- **On** turns dimming on or off. The front window stays bright. Other windows and the desktop dim. The menu bar and Dock stay bright.
-- **Darkness** is 50% by default. The slider runs from 10% to 90%.
-- **Pause** for 10 minutes or 1 hour.
-- **Launch at login** works after the app is in `/Applications`.
-
-Click the desktop and the shade goes away. Choose a window again and it comes back. If the front app has no window, the whole screen dims.
+The Dock icon is a window split into a bright half and a dim half. Click it, or click **B** in the menu bar, to open settings.
 
 ## Build
 
@@ -36,14 +66,3 @@ A new build changes the code signature, so Accessibility must be turned off and 
 ## License
 
 [MIT](LICENSE) © 2026 Joonit
-
-## 한국어
-
-쓰는 창만 밝게 두고, 다른 창과 바탕화면을 어둡게 합니다.
-
-1. [Releases](../../releases)에서 `Blinders-0.1.0.zip`을 받습니다.
-2. 압축을 풀고 `Blinders.app`을 `/Applications`로 옮깁니다.
-3. 앱을 오른쪽 클릭해서 **열기**를 두 번 누릅니다. 공증되지 않은 앱이라 첫 실행만 이렇게 합니다.
-4. **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용**에서 Blinders를 켭니다. 이미 켜져 있는데 어두워지지 않으면 한 번 끄고 다시 켭니다.
-
-Dock 아이콘이나 메뉴막대의 **B**로 설정 창을 엽니다. 사용, 어둡기, 10분·1시간 일시정지, 로그인 시 실행이 있습니다.
