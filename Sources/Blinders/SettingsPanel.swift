@@ -52,7 +52,15 @@ final class SettingsPanel: NSObject {
         slider.integerValue = min(100, max(10, percent))
         percentLabel.stringValue = "\(slider.integerValue)%"
         if let pausedMinutes {
-            pauseLabel.stringValue = Copy.s("\(pausedMinutes)분 남음", "\(pausedMinutes) min left")
+            pauseLabel.stringValue = Copy.s([
+                "en": "\(pausedMinutes) min left",
+                "ko": "\(pausedMinutes)분 남음",
+                "ja": "残り\(pausedMinutes)分",
+                "zh": "剩余 \(pausedMinutes) 分钟",
+                "es": "\(pausedMinutes) min restantes",
+                "de": "noch \(pausedMinutes) Min.",
+                "fr": "\(pausedMinutes) min restantes",
+            ])
             pauseLabel.isHidden = false
             resumeButton.isHidden = false
         } else {
@@ -94,13 +102,26 @@ final class SettingsPanel: NSObject {
         permissionBox.cornerRadius = 8
         permissionBox.translatesAutoresizingMaskIntoConstraints = false
         permissionBox.widthAnchor.constraint(equalToConstant: 320).isActive = true
-        let permissionText = NSTextField(wrappingLabelWithString: Copy.s(
-            "다른 창을 어둡게 하려면 손쉬운 사용에서 Blinders를 한 번 켜 주세요.",
-            "Turn Blinders on once in Accessibility to dim other windows."
-        ))
+        let permissionText = NSTextField(wrappingLabelWithString: Copy.s([
+            "en": "Turn Blinders on once in Accessibility to dim other windows.",
+            "ko": "다른 창을 어둡게 하려면 손쉬운 사용에서 Blinders를 한 번 켜 주세요.",
+            "ja": "ほかのウィンドウを暗くするには、アクセシビリティで Blinders を一度オンにしてください。",
+            "zh": "要让其他窗口变暗，请在辅助功能中打开一次 Blinders。",
+            "es": "Activa Blinders una vez en Accesibilidad para atenuar las otras ventanas.",
+            "de": "Schalte Blinders einmal in den Bedienungshilfen ein, damit andere Fenster dunkler werden.",
+            "fr": "Activez Blinders une fois dans Accessibilité pour assombrir les autres fenêtres.",
+        ]))
         permissionText.translatesAutoresizingMaskIntoConstraints = false
         let permissionButton = NSButton(
-            title: Copy.s("손쉬운 사용 열기", "Open Accessibility"),
+            title: Copy.s([
+                "en": "Open Accessibility",
+                "ko": "손쉬운 사용 열기",
+                "ja": "アクセシビリティを開く",
+                "zh": "打开辅助功能",
+                "es": "Abrir Accesibilidad",
+                "de": "Bedienungshilfen öffnen",
+                "fr": "Ouvrir Accessibilité",
+            ]),
             target: self,
             action: #selector(openAX)
         )
@@ -120,7 +141,9 @@ final class SettingsPanel: NSObject {
 
         let powerRow = NSStackView()
         powerRow.orientation = .horizontal
-        let powerLabel = NSTextField(labelWithString: Copy.s("사용", "On"))
+        let powerLabel = NSTextField(labelWithString: Copy.s([
+            "en": "On", "ko": "사용", "ja": "使用", "zh": "开启", "es": "Activar", "de": "Ein", "fr": "Activé",
+        ]))
         powerLabel.font = .systemFont(ofSize: 13, weight: .semibold)
         power.target = self
         power.action = #selector(powerChanged)
@@ -131,7 +154,9 @@ final class SettingsPanel: NSObject {
         stack.addArrangedSubview(powerRow)
         powerRow.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
 
-        let dimLabel = NSTextField(labelWithString: Copy.s("어둡기", "Darkness"))
+        let dimLabel = NSTextField(labelWithString: Copy.s([
+            "en": "Darkness", "ko": "어둡기", "ja": "暗さ", "zh": "暗度", "es": "Oscuridad", "de": "Dunkelheit", "fr": "Obscurité",
+        ]))
         dimLabel.font = .systemFont(ofSize: 13, weight: .semibold)
         stack.addArrangedSubview(dimLabel)
 
@@ -151,19 +176,27 @@ final class SettingsPanel: NSObject {
         stack.addArrangedSubview(sliderRow)
         sliderRow.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
 
-        let pauseTitle = NSTextField(labelWithString: Copy.s("일시정지", "Pause"))
+        let pauseTitle = NSTextField(labelWithString: Copy.s([
+            "en": "Pause", "ko": "일시정지", "ja": "一時停止", "zh": "暂停", "es": "Pausa", "de": "Pause", "fr": "Pause",
+        ]))
         pauseTitle.font = .systemFont(ofSize: 13, weight: .semibold)
         stack.addArrangedSubview(pauseTitle)
         let pauseRow = NSStackView()
         pauseRow.orientation = .horizontal
         pauseRow.spacing = 8
-        pauseRow.addArrangedSubview(pauseButton(Copy.s("10분", "10 min"), #selector(pause10)))
-        pauseRow.addArrangedSubview(pauseButton(Copy.s("1시간", "1 hour"), #selector(pause60)))
+        pauseRow.addArrangedSubview(pauseButton(Copy.s([
+            "en": "10 min", "ko": "10분", "ja": "10分", "zh": "10分钟", "es": "10 min", "de": "10 Min.", "fr": "10 min",
+        ]), #selector(pause10)))
+        pauseRow.addArrangedSubview(pauseButton(Copy.s([
+            "en": "1 hour", "ko": "1시간", "ja": "1時間", "zh": "1小时", "es": "1 hora", "de": "1 Stunde", "fr": "1 heure",
+        ]), #selector(pause60)))
         stack.addArrangedSubview(pauseRow)
 
         pauseLabel.font = .systemFont(ofSize: 12)
         pauseLabel.textColor = .secondaryLabelColor
-        resumeButton.title = Copy.s("다시 켜기", "Resume")
+        resumeButton.title = Copy.s([
+            "en": "Resume", "ko": "다시 켜기", "ja": "再開", "zh": "恢复", "es": "Reanudar", "de": "Fortsetzen", "fr": "Reprendre",
+        ])
         resumeButton.bezelStyle = .rounded
         resumeButton.target = self
         resumeButton.action = #selector(resume)
@@ -174,7 +207,15 @@ final class SettingsPanel: NSObject {
         resumeRow.addArrangedSubview(resumeButton)
         stack.addArrangedSubview(resumeRow)
 
-        login.title = Copy.s("로그인 시 실행", "Launch at login")
+        login.title = Copy.s([
+            "en": "Launch at login",
+            "ko": "로그인 시 실행",
+            "ja": "ログイン時に開く",
+            "zh": "登录时打开",
+            "es": "Abrir al iniciar sesión",
+            "de": "Beim Anmelden öffnen",
+            "fr": "Ouvrir à la connexion",
+        ])
         login.target = self
         login.action = #selector(loginChanged)
         stack.addArrangedSubview(login)

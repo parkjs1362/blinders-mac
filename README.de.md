@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings.png" width="360" alt="Blinders-Einstellungen">
+  <img src="docs/images/settings-de.png" width="360" alt="Blinders-Einstellungen">
 </p>
 
 ## Warum

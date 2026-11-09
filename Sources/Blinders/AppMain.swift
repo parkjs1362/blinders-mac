@@ -3,8 +3,20 @@ import Carbon
 import ServiceManagement
 
 enum Copy {
-    static var ko: Bool { Locale.preferredLanguages.first?.hasPrefix("ko") == true }
-    static func s(_ korean: String, _ english: String) -> String { ko ? korean : english }
+    static var code: String {
+        let lang = Locale.preferredLanguages.first?.lowercased() ?? "en"
+        if lang.hasPrefix("ko") { return "ko" }
+        if lang.hasPrefix("ja") { return "ja" }
+        if lang.hasPrefix("zh") { return "zh" }
+        if lang.hasPrefix("es") { return "es" }
+        if lang.hasPrefix("de") { return "de" }
+        if lang.hasPrefix("fr") { return "fr" }
+        return "en"
+    }
+
+    static func s(_ strings: [String: String]) -> String {
+        strings[code] ?? strings["en"] ?? ""
+    }
 }
 
 extension Notification.Name {
@@ -170,11 +182,24 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.removeAllItems()
         let trusted = accessibilityTrusted(prompt: false)
         if !trusted {
-            menu.addItem(item(Copy.s("손쉬운 사용 설정 열기", "Open Accessibility Settings"), #selector(openAX)))
-            let note = item(Copy.s(
-                "권한이 없으면 창을 어둡게 하지 않습니다",
-                "Dimming stays off until Accessibility is allowed"
-            ), nil)
+            menu.addItem(item(Copy.s([
+                "en": "Open Accessibility Settings",
+                "ko": "손쉬운 사용 설정 열기",
+                "ja": "アクセシビリティ設定を開く",
+                "zh": "打开辅助功能设置",
+                "es": "Abrir Ajustes de accesibilidad",
+                "de": "Bedienungshilfen öffnen",
+                "fr": "Ouvrir Accessibilité",
+            ]), #selector(openAX)))
+            let note = item(Copy.s([
+                "en": "Dimming stays off until Accessibility is allowed",
+                "ko": "권한이 없으면 창을 어둡게 하지 않습니다",
+                "ja": "許可するまで暗くしません",
+                "zh": "未允许前不会变暗",
+                "es": "No se atenúa hasta permitir Accesibilidad",
+                "de": "Ohne Bedienungshilfen bleibt es hell",
+                "fr": "Pas d'assombrissement sans Accessibilité",
+            ]), nil)
             note.isEnabled = false
             menu.addItem(note)
             menu.addItem(.separator())
@@ -182,33 +207,69 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         if isPaused {
             let minutes = remainingMinutes()
-            menu.addItem(item(Copy.s("다시 켜기 · \(minutes)분", "Resume · \(minutes) min"), #selector(resume)))
-            menu.addItem(item(Copy.s("끄기", "Turn Off"), #selector(turnOffAction)))
+            menu.addItem(item(Copy.s([
+                "en": "Resume · \(minutes) min",
+                "ko": "다시 켜기 · \(minutes)분",
+                "ja": "再開 · \(minutes)分",
+                "zh": "恢复 · \(minutes)分钟",
+                "es": "Reanudar · \(minutes) min",
+                "de": "Fortsetzen · \(minutes) Min.",
+                "fr": "Reprendre · \(minutes) min",
+            ]), #selector(resume)))
+            menu.addItem(item(Copy.s([
+                "en": "Turn Off", "ko": "끄기", "ja": "オフ", "zh": "关闭", "es": "Apagar", "de": "Ausschalten", "fr": "Éteindre",
+            ]), #selector(turnOffAction)))
         } else if percent > 0 {
-            let off = item(Copy.s("끄기\t⌃⌥⌘D", "Turn Off\t⌃⌥⌘D"), #selector(primary))
+            let off = item(Copy.s([
+                "en": "Turn Off", "ko": "끄기", "ja": "オフ", "zh": "关闭", "es": "Apagar", "de": "Ausschalten", "fr": "Éteindre",
+            ]), #selector(primary))
             off.state = (trusted && !fnDown) ? .on : .off
             menu.addItem(off)
         } else {
-            menu.addItem(item(Copy.s("켜기\t⌃⌥⌘D", "Turn On\t⌃⌥⌘D"), #selector(primary)))
+            menu.addItem(item(Copy.s([
+                "en": "Turn On", "ko": "켜기", "ja": "オン", "zh": "打开", "es": "Encender", "de": "Einschalten", "fr": "Allumer",
+            ]), #selector(primary)))
         }
 
         let brightness = percent == 0
-            ? Copy.s("밝기 꺼짐", "Brightness off")
-            : Copy.s("밝기 \(percent)%", "Brightness \(percent)%")
+            ? Copy.s([
+                "en": "Brightness off", "ko": "밝기 꺼짐", "ja": "明るさ オフ", "zh": "亮度 关", "es": "Brillo apagado", "de": "Helligkeit aus", "fr": "Luminosité désactivée",
+            ])
+            : Copy.s([
+                "en": "Brightness \(percent)%", "ko": "밝기 \(percent)%", "ja": "明るさ \(percent)%", "zh": "亮度 \(percent)%", "es": "Brillo \(percent)%", "de": "Helligkeit \(percent)%", "fr": "Luminosité \(percent)%",
+            ])
         let label = item(brightness, nil)
         label.isEnabled = false
         menu.addItem(label)
-        menu.addItem(item(Copy.s("더 어둡게", "Darker"), #selector(darker)))
-        menu.addItem(item(Copy.s("더 밝게", "Brighter"), #selector(brighter)))
+        menu.addItem(item(Copy.s([
+            "en": "Darker", "ko": "더 어둡게", "ja": "より暗く", "zh": "更暗", "es": "Más oscuro", "de": "Dunkler", "fr": "Plus sombre",
+        ]), #selector(darker)))
+        menu.addItem(item(Copy.s([
+            "en": "Brighter", "ko": "더 밝게", "ja": "より明るく", "zh": "更亮", "es": "Más claro", "de": "Heller", "fr": "Plus clair",
+        ]), #selector(brighter)))
         menu.addItem(.separator())
-        menu.addItem(item(Copy.s("10분 일시정지", "Pause for 10 minutes"), #selector(pause10)))
-        menu.addItem(item(Copy.s("1시간 일시정지", "Pause for 1 hour"), #selector(pause60)))
+        menu.addItem(item(Copy.s([
+            "en": "Pause for 10 minutes", "ko": "10분 일시정지", "ja": "10分一時停止", "zh": "暂停 10 分钟", "es": "Pausa de 10 minutos", "de": "10 Minuten pausieren", "fr": "Pause de 10 minutes",
+        ]), #selector(pause10)))
+        menu.addItem(item(Copy.s([
+            "en": "Pause for 1 hour", "ko": "1시간 일시정지", "ja": "1時間一時停止", "zh": "暂停 1 小时", "es": "Pausa de 1 hora", "de": "1 Stunde pausieren", "fr": "Pause d'1 heure",
+        ]), #selector(pause60)))
         menu.addItem(.separator())
-        let login = item(Copy.s("로그인 시 실행", "Launch at Login"), #selector(loginAction))
+        let login = item(Copy.s([
+            "en": "Launch at Login", "ko": "로그인 시 실행", "ja": "ログイン時に開く", "zh": "登录时打开", "es": "Abrir al iniciar sesión", "de": "Beim Anmelden öffnen", "fr": "Ouvrir à la connexion",
+        ]), #selector(loginAction))
         login.state = loginIsOn() ? .on : .off
         menu.addItem(login)
         if let loginError {
-            let errorItem = item(Copy.s("로그인 항목 실패: \(loginError)", "Login item failed: \(loginError)"), nil)
+            let errorItem = item(Copy.s([
+                "en": "Login item failed: \(loginError)",
+                "ko": "로그인 항목 실패: \(loginError)",
+                "ja": "ログイン項目に失敗: \(loginError)",
+                "zh": "登录项失败: \(loginError)",
+                "es": "Error al iniciar sesión: \(loginError)",
+                "de": "Anmeldeobjekt fehlgeschlagen: \(loginError)",
+                "fr": "Échec de l'ouverture à la connexion: \(loginError)",
+            ]), nil)
             errorItem.isEnabled = false
             menu.addItem(errorItem)
         }
@@ -218,7 +279,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             menu.addItem(errorItem)
         }
         menu.addItem(.separator())
-        menu.addItem(item(Copy.s("종료", "Quit"), #selector(quit)))
+        menu.addItem(item(Copy.s([
+            "en": "Quit", "ko": "종료", "ja": "終了", "zh": "退出", "es": "Salir", "de": "Beenden", "fr": "Quitter",
+        ]), #selector(quit)))
     }
 
     private func render() {

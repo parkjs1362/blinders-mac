@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings.png" width="360" alt="Réglages de Blinders">
+  <img src="docs/images/settings-fr.png" width="360" alt="Réglages de Blinders">
 </p>
 
 ## Pourquoi

@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings.png" width="360" alt="Blinders 설정">
+  <img src="docs/images/settings-ko.png" width="360" alt="Blinders 설정">
 </p>
 
 ## 왜
