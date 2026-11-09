@@ -49,7 +49,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var fnDown = false
     private var wasShowing = false
     private var scrollBucket: CGFloat = 0
-    private var notice: NSWindow?
+    private var settings: SettingsPanel?
 
     override init() {
         let defaults = UserDefaults.standard
@@ -98,78 +98,63 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         render()
         DispatchQueue.main.async { [weak self] in
             guard let self, !accessibilityTrusted(prompt: false) else { return }
-            self.showNotice()
+            self.showSettings()
         }
     }
 
     @objc func showMenu() {
-        if !accessibilityTrusted(prompt: false) {
-            showNotice()
-            return
-        }
-        menu.update()
-        menu.popUp(positioning: nil, at: menuAnchor(), in: nil)
+        showSettings()
     }
 
-    private func showNotice() {
-        let window = notice ?? makeNotice()
-        notice = window
+    private func showSettings() {
+        let panel = settings ?? makeSettings()
+        settings = panel
+        refreshSettings()
         let screen = NSScreen.screens.first { $0.frame.contains(NSEvent.mouseLocation) }
             ?? NSScreen.main
             ?? NSScreen.screens[0]
-        let size = window.frame.size
-        window.setFrameOrigin(NSPoint(
-            x: screen.frame.midX - size.width / 2,
-            y: screen.frame.midY - size.height / 2
-        ))
-        window.collectionBehavior = [.moveToActiveSpace]
-        window.level = .statusBar
-        window.orderFrontRegardless()
-        NSApp.activate(ignoringOtherApps: true)
+        panel.show(on: screen)
     }
 
-    private func makeNotice() -> NSWindow {
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 440, height: 188),
-            styleMask: [.titled, .closable],
-            backing: .buffered,
-            defer: false
-        )
-        window.title = "Blinders"
-        window.isReleasedWhenClosed = false
-        let text = NSTextField(wrappingLabelWithString: Copy.s(
-            "손쉬운 사용 목록에서 Blinders를 한 번만 켜 주세요. 켜지면 이 창은 닫히고 다른 창이 어두워집니다.",
-            "Turn Blinders on once in the Accessibility list. This window closes and other windows dim."
-        ))
-        text.frame = NSRect(x: 20, y: 64, width: 400, height: 108)
-        let settings = NSButton(
-            title: Copy.s("설정 열기", "Open Settings"),
-            target: self,
-            action: #selector(openAX)
-        )
-        settings.frame = NSRect(x: 20, y: 16, width: 140, height: 32)
-        settings.isEnabled = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            settings.isEnabled = true
-        }
-        let content = NSView(frame: NSRect(x: 0, y: 0, width: 440, height: 188))
-        content.addSubview(text)
-        content.addSubview(settings)
-        window.contentView = content
-        return window
-    }
-
-    private func menuAnchor() -> NSPoint {
-        let screen = NSScreen.main ?? NSScreen.screens[0]
-        if let button = statusItem.button, let window = button.window {
-            let rect = window.convertToScreen(button.bounds)
-            let inMenuBar = rect.height > 2 && abs(screen.frame.maxY - rect.maxY) < 40
-            if inMenuBar {
-                let x = min(max(rect.minX, screen.frame.minX), screen.frame.maxX - 420)
-                return NSPoint(x: x, y: screen.frame.maxY - 8)
+    private func makeSettings() -> SettingsPanel {
+        let panel = SettingsPanel()
+        panel.onEnabled = { [weak self] on in
+            guard let self else { return }
+            if on {
+                if self.percent == 0 { self.percent = self.savedPercent >= 10 ? self.savedPercent : 50 }
+            } else if self.percent > 0 {
+                self.savedPercent = self.percent
+                self.percent = 0
             }
+            self.store()
+            self.render()
         }
-        return NSPoint(x: screen.frame.maxX - 420, y: screen.frame.maxY - 8)
+        panel.onPercent = { [weak self] value in
+            guard let self else { return }
+            self.savedPercent = value
+            self.percent = value
+            self.store()
+            self.render()
+        }
+        panel.onPause = { [weak self] minutes in self?.pause(minutes: minutes) }
+        panel.onResume = { [weak self] in self?.clearPause() }
+        panel.onLogin = { [weak self] in
+            self?.toggleLogin()
+            self?.refreshSettings()
+        }
+        panel.onOpenAX = { [weak self] in self?.openAX() }
+        return panel
+    }
+
+    private func refreshSettings() {
+        settings?.refresh(
+            trusted: accessibilityTrusted(prompt: false),
+            enabled: percent > 0,
+            percent: percent == 0 ? savedPercent : percent,
+            pausedMinutes: isPaused ? remainingMinutes() : nil,
+            loginOn: loginIsOn(),
+            loginError: loginError
+        )
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -230,9 +215,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func render() {
         guard statusItem != nil else { return }
         let trusted = accessibilityTrusted(prompt: false)
-        if trusted {
-            notice?.orderOut(nil)
-        }
+        refreshSettings()
         let show = trusted && percent > 0 && !isPaused && !fnDown
         let animated = show != wasShowing
         wasShowing = show
