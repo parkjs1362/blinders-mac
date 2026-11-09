@@ -62,6 +62,11 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         super.init()
     }
 
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showSettings()
+        return true
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         assert(runDimTargetSelfCheck())
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -412,7 +417,7 @@ enum Main {
             exit(0)
         }
         let app = NSApplication.shared
-        app.setActivationPolicy(.accessory)
+        app.setActivationPolicy(.regular)
         let others = NSRunningApplication.runningApplications(withBundleIdentifier: "com.joonit.blinders")
             .filter { $0.processIdentifier != getpid() }
         if !others.isEmpty {
