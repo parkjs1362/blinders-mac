@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings-en.png" width="360" alt="Blinders settings">
+  <img src="docs/images/settings-en.png" width="640" alt="Blinders settings">
 </p>
 
 ## Why
@@ -48,7 +48,7 @@ Like blinders on a racehorse: the window you are using stays bright, and the res
 
 ## Download
 
-1. Download `Blinders-0.1.0.zip` from [Releases](../../releases).
+1. Download `Blinders-0.1.2.zip` from [Releases](../../releases).
 2. Unzip it and move `Blinders.app` to `/Applications`.
 3. Right-click the app and choose **Open**, then **Open** again. It is not notarized yet, so the first launch needs that extra click.
 4. Open **System Settings → Privacy & Security → Accessibility** and turn Blinders on. If the switch is already on and nothing dims, turn it off and on once.

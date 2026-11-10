@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings-zh-CN.png" width="360" alt="Blinders 设置">
+  <img src="docs/images/settings-zh-CN.png" width="640" alt="Blinders 设置">
 </p>
 
 ## 为什么
@@ -48,7 +48,7 @@
 
 ## 下载
 
-1. 从 [Releases](../../releases) 下载 `Blinders-0.1.0.zip`。
+1. 从 [Releases](../../releases) 下载 `Blinders-0.1.2.zip`。
 2. 解压后把 `Blinders.app` 移到 `/Applications`。
 3. 右键应用，选择**打开**，再选择一次**打开**。应用尚未公证，所以第一次需要多点一次。
 4. 打开**系统设置 → 隐私与安全性 → 辅助功能**，打开 Blinders。如果开关已经打开但没有变暗，请先关闭再打开。

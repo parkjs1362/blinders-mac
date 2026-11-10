@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings-de.png" width="360" alt="Blinders-Einstellungen">
+  <img src="docs/images/settings-de.png" width="640" alt="Blinders-Einstellungen">
 </p>
 
 ## Warum
@@ -48,7 +48,7 @@ Wie Scheuklappen beim Rennpferd: Das Fenster, das du benutzt, bleibt hell, der R
 
 ## Download
 
-1. Lade `Blinders-0.1.0.zip` unter [Releases](../../releases) herunter.
+1. Lade `Blinders-0.1.2.zip` unter [Releases](../../releases) herunter.
 2. Entpacke die Datei und lege `Blinders.app` nach `/Applications`.
 3. Klicke die App mit der rechten Maustaste an und wähle **Öffnen**, dann noch einmal **Öffnen**. Sie ist noch nicht notarisiert, deshalb braucht der erste Start diesen Extra-Klick.
 4. Öffne **Systemeinstellungen → Datenschutz & Sicherheit → Bedienungshilfen** und schalte Blinders ein. Wenn der Schalter schon an ist und nichts dunkler wird, schalte ihn aus und wieder ein.

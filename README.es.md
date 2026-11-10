@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings-es.png" width="360" alt="Ajustes de Blinders">
+  <img src="docs/images/settings-es.png" width="640" alt="Ajustes de Blinders">
 </p>
 
 ## Por qué
@@ -48,7 +48,7 @@ Como las anteojeras de un caballo de carreras: la ventana que usas se queda bril
 
 ## Descargar
 
-1. Descarga `Blinders-0.1.0.zip` desde [Releases](../../releases).
+1. Descarga `Blinders-0.1.2.zip` desde [Releases](../../releases).
 2. Descomprime y mueve `Blinders.app` a `/Applications`.
 3. Haz clic derecho en la app y elige **Abrir**, y luego **Abrir** otra vez. Aún no está notarizada, así que el primer arranque pide ese clic extra.
 4. Abre **Ajustes del Sistema → Privacidad y seguridad → Accesibilidad** y activa Blinders. Si el interruptor ya está activo y no se oscurece nada, apágalo y vuelve a encenderlo.

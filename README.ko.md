@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings-ko.png" width="360" alt="Blinders 설정">
+  <img src="docs/images/settings-ko.png" width="640" alt="Blinders 설정">
 </p>
 
 ## 왜
@@ -48,7 +48,7 @@
 
 ## 받기
 
-1. [Releases](../../releases)에서 `Blinders-0.1.0.zip`을 받습니다.
+1. [Releases](../../releases)에서 `Blinders-0.1.2.zip`을 받습니다.
 2. 압축을 풀고 `Blinders.app`을 `/Applications`로 옮깁니다.
 3. 앱을 오른쪽 클릭해서 **열기**를 두 번 누릅니다. 아직 공증되지 않아 첫 실행만 이렇게 합니다.
 4. **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용**에서 Blinders를 켭니다. 이미 켜져 있는데 어두워지지 않으면 한 번 끄고 다시 켭니다.

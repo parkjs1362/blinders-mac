@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/settings-ja.png" width="360" alt="Blinders の設定">
+  <img src="docs/images/settings-ja.png" width="640" alt="Blinders の設定">
 </p>
 
 ## なぜ
@@ -48,7 +48,7 @@
 
 ## ダウンロード
 
-1. [Releases](../../releases) から `Blinders-0.1.0.zip` をダウンロードします。
+1. [Releases](../../releases) から `Blinders-0.1.2.zip` をダウンロードします。
 2. 解凍して `Blinders.app` を `/Applications` に移動します。
 3. アプリを右クリックして **開く** を二度選びます。まだ公証されていないため、初回だけこの操作が必要です。
 4. **システム設定 → プライバシーとセキュリティ → アクセシビリティ** で Blinders をオンにします。オンなのに暗くならないときは、一度オフにしてからオンにします。
