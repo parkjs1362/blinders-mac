@@ -58,6 +58,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var pauseUntil: Date?
     private var pauseTimer: Timer?
     private var loginError: String?
+    private var showInMenuBar: Bool
+    private var showInDock: Bool
+    private var presenceNote: String?
     private var fnDown = false
     private var wasShowing = false
     private var scrollBucket: CGFloat = 0
@@ -71,7 +74,18 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let saved = defaults.object(forKey: "savedPercent") as? Int
         let savedInitial = ((saved ?? max(percent, 10)) / 10) * 10
         savedPercent = min(100, max(10, savedInitial))
+        let menuBarStored = defaults.object(forKey: "showInMenuBar") as? Bool
+        let dockStored = defaults.object(forKey: "showInDock") as? Bool
+        var menuBarOn = menuBarStored ?? true
+        var dockOn = dockStored ?? true
+        if !menuBarOn && !dockOn {
+            menuBarOn = true
+            dockOn = true
+        }
+        showInMenuBar = menuBarOn
+        showInDock = dockOn
         super.init()
+        if menuBarStored == false && dockStored == false { storePresence() }
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -100,6 +114,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 button.imagePosition = .imageLeading
             }
         }
+        installQuitMenu()
+        applyPresence(restoreSettings: false)
         DistributedNotificationCenter.default().addObserver(
             self,
             selector: #selector(showMenu),
@@ -163,8 +179,87 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self?.toggleLogin()
             self?.refreshSettings()
         }
+        panel.onMenuBar = { [weak self] on in self?.setMenuBar(on) }
+        panel.onDock = { [weak self] on in self?.setDock(on) }
+        panel.onQuit = { NSApp.terminate(nil) }
         panel.onOpenAX = { [weak self] in self?.openAX() }
         return panel
+    }
+
+    private func setMenuBar(_ on: Bool) {
+        guard on || showInDock else {
+            presenceNote = keepOneVisible
+            refreshSettings()
+            return
+        }
+        presenceNote = nil
+        showInMenuBar = on
+        storePresence()
+        applyPresence(restoreSettings: true)
+        refreshSettings()
+    }
+
+    private func setDock(_ on: Bool) {
+        guard on || showInMenuBar else {
+            presenceNote = keepOneVisible
+            refreshSettings()
+            return
+        }
+        presenceNote = nil
+        showInDock = on
+        storePresence()
+        applyPresence(restoreSettings: true)
+        refreshSettings()
+    }
+
+    private var keepOneVisible: String {
+        Copy.s([
+            "en": "Keep the menu bar or the Dock visible.",
+            "ko": "메뉴 막대나 독 중 하나는 켜 두세요.",
+            "ja": "メニューバーか Dock のどちらかは表示したままにしてください。",
+            "zh": "请保留菜单栏或程序坞中的至少一个。",
+            "es": "Deja visible la barra de menús o el Dock.",
+            "de": "Lass die Menüleiste oder das Dock sichtbar.",
+            "fr": "Laissez la barre des menus ou le Dock visible.",
+        ])
+    }
+
+    /// Accessory policy drops the Dock icon and can order the settings window out. Put it back.
+    private func applyPresence(restoreSettings: Bool) {
+        if statusItem != nil { statusItem.isVisible = showInMenuBar }
+        let policy: NSApplication.ActivationPolicy = showInDock ? .regular : .accessory
+        if NSApp.activationPolicy() != policy {
+            NSApp.setActivationPolicy(policy)
+        }
+        guard restoreSettings, let window = settings?.window else { return }
+        DispatchQueue.main.async {
+            window.level = .floating
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
+    private func installQuitMenu() {
+        let appMenu = NSMenu()
+        let quit = NSMenuItem(
+            title: Copy.s([
+                "en": "Quit Blinders",
+                "ko": "Blinders 종료",
+                "ja": "Blinders を終了",
+                "zh": "退出 Blinders",
+                "es": "Salir de Blinders",
+                "de": "Blinders beenden",
+                "fr": "Quitter Blinders",
+            ]),
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: "q"
+        )
+        appMenu.addItem(quit)
+        let appItem = NSMenuItem()
+        appItem.submenu = appMenu
+        let main = NSMenu()
+        main.addItem(appItem)
+        NSApp.mainMenu = main
     }
 
     private func refreshSettings() {
@@ -174,7 +269,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             percent: percent == 0 ? savedPercent : percent,
             pausedMinutes: isPaused ? remainingMinutes() : nil,
             loginOn: loginIsOn(),
-            loginError: loginError
+            loginError: loginError,
+            menuBarOn: showInMenuBar,
+            dockOn: showInDock,
+            presenceNote: presenceNote
         )
     }
 
@@ -375,6 +473,11 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         UserDefaults.standard.set(savedPercent, forKey: "savedPercent")
     }
 
+    private func storePresence() {
+        UserDefaults.standard.set(showInMenuBar, forKey: "showInMenuBar")
+        UserDefaults.standard.set(showInDock, forKey: "showInDock")
+    }
+
     private func loginIsOn() -> Bool {
         SMAppService.mainApp.status == .enabled
     }
@@ -484,7 +587,8 @@ enum Main {
             exit(0)
         }
         let app = NSApplication.shared
-        app.setActivationPolicy(.regular)
+        let showDock = UserDefaults.standard.object(forKey: "showInDock") as? Bool ?? true
+        app.setActivationPolicy(showDock ? .regular : .accessory)
         let others = NSRunningApplication.runningApplications(withBundleIdentifier: "com.joonit.blinders")
             .filter { $0.processIdentifier != getpid() }
         if !others.isEmpty {

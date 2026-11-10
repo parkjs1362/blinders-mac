@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 oder neuer">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="Version 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="Version 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT-Lizenz">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="etwa 1 MB">
 </p>
@@ -41,6 +41,7 @@ Wie Scheuklappen beim Rennpferd: Das Fenster, das du benutzt, bleibt hell, der R
 - **Dunkelheit** von 10% bis 90%. Standard ist 50%.
 - **Pause** für 10 Minuten oder 1 Stunde.
 - **Beim Anmelden öffnen,** nachdem die App in `/Applications` liegt.
+- **Menüleiste und Dock.** Jedes lässt sich ein- oder ausblenden. Eines bleibt sichtbar, damit sich Blinders wieder öffnen lässt.
 - **Ein Klick auf den Schreibtisch** nimmt die Abdunklung weg. Ein neues Fenster holt sie zurück.
 - **Hat die vordere App kein Fenster,** wird der ganze Bildschirm dunkel.
 - **Vollbild:** Ein Display, das das vordere Fenster füllt, bleibt hell. Die anderen bleiben gedimmt.

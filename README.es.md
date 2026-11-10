@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 o posterior">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="versión 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="versión 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="licencia MIT">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="cerca de 1 MB">
 </p>
@@ -41,6 +41,7 @@ Como las anteojeras de un caballo de carreras: la ventana que usas se queda bril
 - **Oscuridad** del 10% al 90%. El valor inicial es 50%.
 - **Pausa** de 10 minutos o 1 hora.
 - **Abrir al iniciar sesión,** después de colocar la app en `/Applications`.
+- **Barra de menús y Dock.** Se pueden mostrar u ocultar por separado. Uno de los dos sigue visible para poder abrir Blinders.
 - **Un clic en el escritorio** quita la sombra. Al elegir otra ventana, vuelve.
 - **Si la app de delante no tiene ventana,** se oscurece toda la pantalla.
 - **Pantalla completa:** la pantalla ocupada por la ventana de delante se queda brillante. Las otras siguen atenuadas.

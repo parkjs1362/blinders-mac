@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 或更高">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="版本 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="版本 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 许可证">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="约 1 MB">
 </p>
@@ -41,6 +41,7 @@
 - **暗度**从 10% 到 90%，默认 50%。
 - **暂停** 10 分钟或 1 小时。
 - **登录时打开**需要先把应用放进 `/Applications`。
+- **菜单栏和程序坞。** 可以分别显示或隐藏，至少保留一个，这样之后还能打开。
 - **点击桌面**会收起遮罩。再次选中窗口后恢复。
 - **前台应用没有窗口时**整屏变暗，避免把后台应用当成正在使用的窗口。
 - **全屏：** 被前台窗口铺满的显示器保持明亮，其他显示器继续变暗。

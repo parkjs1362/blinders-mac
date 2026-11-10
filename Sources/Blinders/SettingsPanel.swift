@@ -7,8 +7,12 @@ final class SettingsPanel: NSObject {
     var onPause: (Int) -> Void = { _ in }
     var onResume: () -> Void = {}
     var onLogin: () -> Void = {}
+    var onMenuBar: (Bool) -> Void = { _ in }
+    var onDock: (Bool) -> Void = { _ in }
+    var onQuit: () -> Void = {}
     var onOpenAX: () -> Void = {}
 
+    private let stack = NSStackView()
     private let permissionBox = NSBox()
     private let power = NSSwitch()
     private let slider = NSSlider()
@@ -16,12 +20,15 @@ final class SettingsPanel: NSObject {
     private let pauseLabel = NSTextField(labelWithString: "")
     private let resumeButton = NSButton()
     private let login = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    private let menuBar = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    private let dock = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    private let presenceHint = NSTextField(wrappingLabelWithString: "")
     private let loginErrorLabel = NSTextField(wrappingLabelWithString: "")
     private var ignoreControl = false
 
     override init() {
         window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 360, height: 300),
+            contentRect: NSRect(x: 0, y: 0, width: 380, height: 460),
             styleMask: [.titled, .closable, .fullSizeContentView],
             backing: .buffered,
             defer: false
@@ -29,6 +36,7 @@ final class SettingsPanel: NSObject {
         super.init()
         window.title = "Blinders"
         window.titlebarAppearsTransparent = true
+        window.isRestorable = false
         window.isReleasedWhenClosed = false
         window.isMovableByWindowBackground = true
         build()
@@ -45,12 +53,16 @@ final class SettingsPanel: NSObject {
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    func refresh(trusted: Bool, enabled: Bool, percent: Int, pausedMinutes: Int?, loginOn: Bool, loginError: String?) {
+    func refresh(trusted: Bool, enabled: Bool, percent: Int, pausedMinutes: Int?, loginOn: Bool, loginError: String?, menuBarOn: Bool, dockOn: Bool, presenceNote: String?) {
         ignoreControl = true
         permissionBox.isHidden = trusted
         power.state = enabled ? .on : .off
         slider.integerValue = min(100, max(10, percent))
         percentLabel.stringValue = "\(slider.integerValue)%"
+        menuBar.state = menuBarOn ? .on : .off
+        dock.state = dockOn ? .on : .off
+        presenceHint.stringValue = presenceNote ?? ""
+        presenceHint.isHidden = presenceNote == nil
         if let pausedMinutes {
             pauseLabel.stringValue = Copy.s([
                 "en": "\(pausedMinutes) min left",
@@ -71,10 +83,27 @@ final class SettingsPanel: NSObject {
         loginErrorLabel.stringValue = loginError ?? ""
         loginErrorLabel.isHidden = loginError == nil
         ignoreControl = false
+        resizeToFit()
+    }
+
+    /// Hug the controls. Focus changes call refresh often, so the frame moves only when the height actually changes.
+    private func resizeToFit() {
+        guard window.contentView != nil else { return }
+        window.contentView?.layoutSubtreeIfNeeded()
+        let contentHeight = max(360, ceil(stack.fittingSize.height) + 52)
+        let content = NSRect(x: 0, y: 0, width: 380, height: contentHeight)
+        let size = window.frameRect(forContentRect: content).size
+        let old = window.frame
+        if abs(old.height - size.height) < 2, abs(old.width - size.width) < 2 { return }
+        var frame = old
+        let top = old.maxY
+        frame.size = size
+        frame.origin.y = top - size.height
+        window.setFrame(frame, display: true)
     }
 
     private func build() {
-        let content = NSView(frame: NSRect(x: 0, y: 0, width: 360, height: 300))
+        let content = NSView(frame: NSRect(x: 0, y: 0, width: 380, height: 460))
         let effect = NSVisualEffectView(frame: content.bounds)
         effect.autoresizingMask = [.width, .height]
         effect.material = .hudWindow
@@ -82,7 +111,6 @@ final class SettingsPanel: NSObject {
         effect.state = .active
         content.addSubview(effect)
 
-        let stack = NSStackView()
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 14
@@ -101,7 +129,6 @@ final class SettingsPanel: NSObject {
         permissionBox.borderWidth = 1
         permissionBox.cornerRadius = 8
         permissionBox.translatesAutoresizingMaskIntoConstraints = false
-        permissionBox.widthAnchor.constraint(equalToConstant: 320).isActive = true
         let permissionText = NSTextField(wrappingLabelWithString: Copy.s([
             "en": "Turn Blinders on once in Accessibility to dim other windows.",
             "ko": "다른 창을 어둡게 하려면 손쉬운 사용에서 Blinders를 한 번 켜 주세요.",
@@ -138,6 +165,11 @@ final class SettingsPanel: NSObject {
             permissionButton.bottomAnchor.constraint(equalTo: permissionBox.bottomAnchor, constant: -10),
         ])
         stack.addArrangedSubview(permissionBox)
+        permissionBox.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+
+        addSection(Copy.s([
+            "en": "Dimming", "ko": "어둡게", "ja": "暗くする", "zh": "变暗", "es": "Atenuación", "de": "Abdunkeln", "fr": "Assombrissement",
+        ]), ruled: false)
 
         let powerRow = NSStackView()
         powerRow.orientation = .horizontal
@@ -207,6 +239,40 @@ final class SettingsPanel: NSObject {
         resumeRow.addArrangedSubview(resumeButton)
         stack.addArrangedSubview(resumeRow)
 
+        addSection(Copy.s([
+            "en": "General", "ko": "일반", "ja": "一般", "zh": "通用", "es": "General", "de": "Allgemein", "fr": "Général",
+        ]))
+        menuBar.title = Copy.s([
+            "en": "Show in the menu bar",
+            "ko": "메뉴 막대에 표시",
+            "ja": "メニューバーに表示",
+            "zh": "在菜单栏中显示",
+            "es": "Mostrar en la barra de menús",
+            "de": "In der Menüleiste anzeigen",
+            "fr": "Afficher dans la barre des menus",
+        ])
+        menuBar.target = self
+        menuBar.action = #selector(menuBarChanged)
+        stack.addArrangedSubview(menuBar)
+        dock.title = Copy.s([
+            "en": "Show in the Dock",
+            "ko": "독에 표시",
+            "ja": "Dock に表示",
+            "zh": "在程序坞中显示",
+            "es": "Mostrar en el Dock",
+            "de": "Im Dock anzeigen",
+            "fr": "Afficher dans le Dock",
+        ])
+        dock.target = self
+        dock.action = #selector(dockChanged)
+        stack.addArrangedSubview(dock)
+        presenceHint.font = .systemFont(ofSize: 11)
+        presenceHint.textColor = .secondaryLabelColor
+        presenceHint.maximumNumberOfLines = 2
+        presenceHint.isHidden = true
+        stack.addArrangedSubview(presenceHint)
+        presenceHint.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+
         login.title = Copy.s([
             "en": "Launch at login",
             "ko": "로그인 시 실행",
@@ -224,7 +290,39 @@ final class SettingsPanel: NSObject {
         loginErrorLabel.maximumNumberOfLines = 2
         stack.addArrangedSubview(loginErrorLabel)
 
+        let quit = NSButton(
+            title: Copy.s([
+                "en": "Quit Blinders",
+                "ko": "Blinders 종료",
+                "ja": "Blinders を終了",
+                "zh": "退出 Blinders",
+                "es": "Salir de Blinders",
+                "de": "Blinders beenden",
+                "fr": "Quitter Blinders",
+            ]),
+            target: self,
+            action: #selector(quit)
+        )
+        quit.bezelStyle = .rounded
+        stack.addArrangedSubview(quit)
+
         window.contentView = content
+    }
+
+    private func addSection(_ title: String, ruled: Bool = true) {
+        if ruled {
+            let line = NSBox()
+            line.boxType = .separator
+            line.translatesAutoresizingMaskIntoConstraints = false
+            line.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            stack.addArrangedSubview(line)
+            line.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+            stack.setCustomSpacing(8, after: line)
+        }
+        let label = NSTextField(labelWithString: title)
+        label.font = .systemFont(ofSize: 11, weight: .semibold)
+        label.textColor = .secondaryLabelColor
+        stack.addArrangedSubview(label)
     }
 
     private func pauseButton(_ title: String, _ action: Selector) -> NSButton {
@@ -252,6 +350,18 @@ final class SettingsPanel: NSObject {
         guard !ignoreControl else { return }
         onLogin()
     }
+
+    @objc private func menuBarChanged() {
+        guard !ignoreControl else { return }
+        onMenuBar(menuBar.state == .on)
+    }
+
+    @objc private func dockChanged() {
+        guard !ignoreControl else { return }
+        onDock(dock.state == .on)
+    }
+
+    @objc private func quit() { onQuit() }
 
     @objc private func openAX() { onOpenAX() }
 }

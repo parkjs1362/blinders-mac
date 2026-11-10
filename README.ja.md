@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 以降">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="version 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="version 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="約 1 MB">
 </p>
@@ -41,6 +41,7 @@
 - **暗さ**は 10% から 90%。初期値は 50% です。
 - **一時停止**は 10 分または 1 時間。
 - **ログイン時に開く**は、アプリを `/Applications` に置いてから使えます。
+- **メニューバーと Dock.** それぞれ表示・非表示にできます。どちらか一方は残すので、あとから開けます。
 - **デスクトップをクリック**するとシェードが消えます。ウィンドウを選び直すと戻ります。
 - **前面のアプリにウィンドウがない**ときは画面全体を暗くします。
 - **フルスクリーン**の前面ウィンドウがあるディスプレイは明るく保ち、ほかのディスプレイは暗いままです。

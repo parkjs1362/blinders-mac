@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 or later">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="version 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="version 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="about 1 MB">
 </p>
@@ -41,6 +41,7 @@ Like blinders on a racehorse: the window you are using stays bright, and the res
 - **Darkness** slider from 10% to 90%. The default is 50%.
 - **Pause** for 10 minutes or 1 hour.
 - **Launch at login,** after the app is in `/Applications`.
+- **Menu bar and Dock.** Show or hide each one. One of them stays on, so Blinders can still be opened.
 - **Desktop click** clears the shade. Choose a window again and it returns.
 - **No window in front:** the whole screen dims, so a background app is not treated as the one you are using.
 - **Fullscreen:** a front window that fills a display leaves that display bright. Other displays keep dimming.

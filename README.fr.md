@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 ou plus récent">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="version 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="version 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="licence MIT">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="environ 1 Mo">
 </p>
@@ -41,6 +41,7 @@ Comme les œillères d'un cheval de course : la fenêtre utilisée reste claire,
 - **Obscurité** de 10 % à 90 %. La valeur de départ est 50 %.
 - **Pause** de 10 minutes ou 1 heure.
 - **Ouverture à la connexion,** une fois l'app placée dans `/Applications`.
+- **Barre des menus et Dock.** Chacun peut être affiché ou masqué. L'un des deux reste visible pour rouvrir Blinders.
 - **Un clic sur le bureau** retire l'ombre. Choisir une fenêtre la fait revenir.
 - **Si l'app de devant n'a pas de fenêtre,** tout l'écran s'assombrit.
 - **Plein écran :** l'écran rempli par la fenêtre de devant reste clair. Les autres restent assombris.

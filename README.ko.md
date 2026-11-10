@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 이상">
-  <img src="https://img.shields.io/badge/version-0.1.0-FFB020" alt="버전 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="버전 0.1.1">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 라이선스">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="약 1 MB">
 </p>
@@ -41,6 +41,7 @@
 - **어둡기**는 10%에서 90%까지. 기본값은 50%입니다.
 - **일시정지**는 10분 또는 1시간.
 - **로그인 시 실행**은 앱을 `/Applications`에 넣은 뒤 켤 수 있습니다.
+- **메뉴 막대와 독.** 각각 보이거나 숨길 수 있습니다. 둘 중 하나는 켜 두어 다시 열 수 있게 합니다.
 - **바탕화면을 클릭**하면 막이 걷힙니다. 창을 다시 고르면 돌아옵니다.
 - **앞 앱에 창이 없으면** 화면 전체를 어둡게 합니다. 뒤 앱을 쓰는 창으로 오해하지 않기 위해서입니다.
 - **전체화면**인 앞 창이 있는 화면은 밝게 두고, 다른 화면은 계속 어둡게 합니다.
