@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 ou plus récent">
-  <img src="https://img.shields.io/badge/version-0.1.1-FFB020" alt="version 0.1.1">
+  <img src="https://img.shields.io/badge/version-0.1.2-FFB020" alt="version 0.1.2">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="licence MIT">
   <img src="https://img.shields.io/badge/size-~1%20MB-lightgrey" alt="environ 1 Mo">
 </p>
